@@ -8,9 +8,14 @@
 #include <util/delay.h>
 #define USB_LED_OFF 0
 #define USB_LED_ON  1
+#define USB_DATA_OUT 2
+
+
+
 
 USB_PUBLIC uchar usbFunctionSetup(uchar data[8]) {
 usbRequest_t *rq = (void *)data; // cast data to correct type
+static uchar replyBuf[16];
 
     switch(rq->bRequest) { // custom command is in the bRequest field
     case USB_LED_ON:
@@ -19,6 +24,26 @@ usbRequest_t *rq = (void *)data; // cast data to correct type
     case USB_LED_OFF:
         PORTB &= ~1; // turn LED off
         return 0;
+    case USB_DATA_OUT: // send data to PC
+		if((PORTB & 1)==1)
+			{
+			replyBuf[0]='o';
+			replyBuf[1]='n';
+			replyBuf[2]='\0';
+      		usbMsgPtr = replyBuf;
+       		return 2;
+			
+			}
+		else
+			{
+			replyBuf[0]='o';
+			replyBuf[1]='f';
+			replyBuf[2]='f';
+			replyBuf[3]='\0';
+			usbMsgPtr = replyBuf;
+        	return 3;
+			}
+
     }
 
     return 0; // should not get here

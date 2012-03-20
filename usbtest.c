@@ -8,6 +8,8 @@
 // Same as in main.c
 #define USB_LED_OFF 0
 #define USB_LED_ON  1
+#define USB_DATA_OUT 2
+
 
 /* Used to get descriptor strings for device identification */
 static int usbGetDescriptorString(usb_dev_handle *dev, int index, int langid, 
@@ -130,7 +132,12 @@ int main(int argc, char **argv) {
 		nBytes = usb_control_msg(handle, 
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN, 
 			USB_LED_OFF, 0, 0, (char *)buffer, sizeof(buffer), 5000);
-	}
+	}else if(strcmp(argv[1], "out") == 0) {
+        nBytes = usb_control_msg(handle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+            USB_DATA_OUT, 0, 0, (char *)buffer, sizeof(buffer), 5000);
+        printf("Got %d bytes: %s\n", nBytes, buffer);
+    }
 	
 	if(nBytes < 0)
 		fprintf(stderr, "USB error: %s\n", usb_strerror());
