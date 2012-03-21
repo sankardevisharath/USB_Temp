@@ -9,6 +9,7 @@
 #define USB_LED_OFF 0
 #define USB_LED_ON  1
 #define USB_DATA_OUT 2
+#define USB_TEMP_READ 3
 
 
 /* Used to get descriptor strings for device identification */
@@ -137,7 +138,12 @@ int main(int argc, char **argv) {
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
             USB_DATA_OUT, 0, 0, (char *)buffer, sizeof(buffer), 5000);
         printf("Got %d bytes: %s\n", nBytes, buffer);
-    }
+    }else if(strcmp(argv[1], "temp")==0) {
+		nBytes = usb_control_msg(handle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+            USB_TEMP_READ, 0, 0, (char *)buffer, sizeof(buffer), 5000);
+        printf("Got %d bytes: Here temperature is %s\n", nBytes, buffer);	
+	}
 	
 	if(nBytes < 0)
 		fprintf(stderr, "USB error: %s\n", usb_strerror());
